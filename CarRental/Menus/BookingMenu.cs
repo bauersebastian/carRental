@@ -127,7 +127,57 @@ namespace CarRental.Menus
 
         public static Booking editBooking()
         {
-            return new Booking();
+            var bookingCollection = BookingCollection.Instance;
+            int bookingId;
+            // if there are no bookings we leave the method
+            if (bookingCollection.bookings == null)
+            {
+                return null;
+            }
+            Console.Clear();
+            foreach (Booking record in bookingCollection.bookings)
+            {
+                Console.WriteLine(record);
+            }
+            Console.Write(Environment.NewLine);
+            Console.Write("Buchungsnummer eingeben: ");
+            try
+            {
+                bookingId = Convert.ToInt32(Console.ReadLine());
+            }
+            catch (Exception e)
+            {
+                throw new InvalidCastException("Bitte eine Nummer eingeben!", e);
+            }
+
+            try
+            {
+                Booking editedBooking = bookingCollection.bookings
+                .Single(booking => booking.BookingID == bookingId);
+
+                Console.Write(Environment.NewLine);
+                Console.WriteLine("Ohne Eingabe, bleibt der bisherige Wert bestehen.");
+
+                //Kunde
+                //Kategorie
+                //Auto
+                //Startdatum
+                //Enddatum
+                Console.WriteLine("Bisheriger Kunde: " + editedBooking.CustomerID);
+                Console.Write("Neuer Kunde: ");
+                string v = Console.ReadLine();
+                
+
+                // save the changes to xml file
+                bookingCollection.SerializeToXML(bookingCollection.bookings);
+
+
+                return editedBooking;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Daten nicht gefunden. Bitte valide Kundennummer eingeben.", e);
+            }
         }
 
         public static void deleteBooking()
