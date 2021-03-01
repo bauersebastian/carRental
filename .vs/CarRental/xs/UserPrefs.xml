@@ -1,0 +1,33 @@
+﻿<Properties StartupConfiguration="{F0D7303E-EB9E-49B3-9185-A63485103C02}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="CarRental/Menus/CarMenu.cs">
+    <Files>
+      <File FileName="CarRental/Program.cs" Line="21" Column="31" />
+      <File FileName="CarRental/Menus/BookingMenu.cs" Line="157" Column="14" />
+      <File FileName="CarRental/Menus/CarMenu.cs" Line="294" Column="14" />
+      <File FileName="CarRental/Menus/CustomerMenu.cs" Line="108" Column="39" />
+      <File FileName="CarRental/Models/Car.cs" Line="38" Column="35" />
+      <File FileName="CarRental/Models/Customer.cs" Line="40" Column="94" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="CarRental" expanded="True">
+            <Node name="CarRental" expanded="True">
+              <Node name="Menus" expanded="True">
+                <Node name="CarMenu.cs" selected="True" />
+              </Node>
+              <Node name="Models" expanded="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.ItemProperties.CarRental PreferredExecutionTarget="MonoDevelop.Default" />
+</Properties>

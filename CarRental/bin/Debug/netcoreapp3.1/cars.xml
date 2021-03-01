@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfCar xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Car>
+    <CarID>1</CarID>
+    <Brand>VW</Brand>
+    <Model>New Beatle</Model>
+    <HorsePower>70</HorsePower>
+    <LuggageCompartment>190</LuggageCompartment>
+    <Doors>5</Doors>
+    <Transmission>m</Transmission>
+    <CarCategoryID>1</CarCategoryID>
+  </Car>
+  <Car>
+    <CarID>2</CarID>
+    <Brand>Honda</Brand>
+    <Model>Accord</Model>
+    <HorsePower>150</HorsePower>
+    <LuggageCompartment>700</LuggageCompartment>
+    <Doors>5</Doors>
+    <Transmission>m</Transmission>
+    <CarCategoryID>2</CarCategoryID>
+  </Car>
+  <Car>
+    <CarID>3</CarID>
+    <Brand>Mercedes Benz</Brand>
+    <Model>B-Klasse</Model>
+    <HorsePower>160</HorsePower>
+    <LuggageCompartment>500</LuggageCompartment>
+    <Doors>5</Doors>
+    <Transmission>a</Transmission>
+    <CarCategoryID>1</CarCategoryID>
+  </Car>
+  <Car>
+    <CarID>4</CarID>
+    <Brand>Mercedes-Benz</Brand>
+    <Model>E-Klasse</Model>
+    <HorsePower>240</HorsePower>
+    <LuggageCompartment>900</LuggageCompartment>
+    <Doors>5</Doors>
+    <Transmission>a</Transmission>
+    <CarCategoryID>3</CarCategoryID>
+  </Car>
+</ArrayOfCar>

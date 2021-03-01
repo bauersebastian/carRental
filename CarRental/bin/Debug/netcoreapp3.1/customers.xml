@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfCustomer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Customer>
+    <CustomerID>1</CustomerID>
+    <FirstName>Sebastian</FirstName>
+    <LastName>Bauer</LastName>
+    <IBAN>DE23rqw3</IBAN>
+    <Street>Jahnstraße 15</Street>
+    <Postcode>97447</Postcode>
+    <City>Gerolzhofen</City>
+    <Birthday>1986-08-27T00:00:00</Birthday>
+  </Customer>
+  <Customer>
+    <CustomerID>2</CustomerID>
+    <FirstName>Heidi</FirstName>
+    <LastName>Bauer</LastName>
+    <IBAN>DAD234u</IBAN>
+    <Street>Untere Dorfstraße 28</Street>
+    <Postcode>97519</Postcode>
+    <City>Kleinsteinach</City>
+    <Birthday>1958-09-24T00:00:00</Birthday>
+  </Customer>
+</ArrayOfCustomer>

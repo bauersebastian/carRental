@@ -1,0 +1,12 @@
+/Users/sebastian/Developer/c#/CarRental/CarRental/bin/Debug/netcoreapp3.1/CarRental.deps.json
+/Users/sebastian/Developer/c#/CarRental/CarRental/bin/Debug/netcoreapp3.1/CarRental.runtimeconfig.json
+/Users/sebastian/Developer/c#/CarRental/CarRental/bin/Debug/netcoreapp3.1/CarRental.runtimeconfig.dev.json
+/Users/sebastian/Developer/c#/CarRental/CarRental/bin/Debug/netcoreapp3.1/CarRental.dll
+/Users/sebastian/Developer/c#/CarRental/CarRental/bin/Debug/netcoreapp3.1/CarRental.pdb
+/Users/sebastian/Developer/c#/CarRental/CarRental/obj/Debug/netcoreapp3.1/CarRental.csprojAssemblyReference.cache
+/Users/sebastian/Developer/c#/CarRental/CarRental/obj/Debug/netcoreapp3.1/CarRental.AssemblyInfoInputs.cache
+/Users/sebastian/Developer/c#/CarRental/CarRental/obj/Debug/netcoreapp3.1/CarRental.AssemblyInfo.cs
+/Users/sebastian/Developer/c#/CarRental/CarRental/obj/Debug/netcoreapp3.1/CarRental.csproj.CoreCompileInputs.cache
+/Users/sebastian/Developer/c#/CarRental/CarRental/obj/Debug/netcoreapp3.1/CarRental.dll
+/Users/sebastian/Developer/c#/CarRental/CarRental/obj/Debug/netcoreapp3.1/CarRental.pdb
+/Users/sebastian/Developer/c#/CarRental/CarRental/obj/Debug/netcoreapp3.1/CarRental.genruntimeconfig.cache
