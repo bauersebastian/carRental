@@ -3,7 +3,7 @@
   <CarCategory>
     <CarCategoryID>1</CarCategoryID>
     <Name>Kleinwagen</Name>
-    <RentalFeeDay>40</RentalFeeDay>
+    <RentalFeeDay>45</RentalFeeDay>
   </CarCategory>
   <CarCategory>
     <CarCategoryID>2</CarCategoryID>

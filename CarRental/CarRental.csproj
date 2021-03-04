@@ -10,4 +10,7 @@
     <Folder Include="Menus\" />
     <Folder Include="data\" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="IbanNet" Version="4.3.0" />
+  </ItemGroup>
 </Project>

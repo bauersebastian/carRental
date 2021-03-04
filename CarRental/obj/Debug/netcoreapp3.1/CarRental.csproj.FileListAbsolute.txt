@@ -10,3 +10,5 @@
 /Users/sebastian/Developer/c#/CarRental/CarRental/obj/Debug/netcoreapp3.1/CarRental.dll
 /Users/sebastian/Developer/c#/CarRental/CarRental/obj/Debug/netcoreapp3.1/CarRental.pdb
 /Users/sebastian/Developer/c#/CarRental/CarRental/obj/Debug/netcoreapp3.1/CarRental.genruntimeconfig.cache
+/Users/sebastian/Developer/c#/CarRental/CarRental/bin/Debug/netcoreapp3.1/IbanNet.dll
+/Users/sebastian/Developer/c#/CarRental/CarRental/obj/Debug/netcoreapp3.1/CarRental.csproj.CopyComplete

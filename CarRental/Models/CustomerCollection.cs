@@ -65,5 +65,19 @@ namespace CarRental.Models
             return customers;
         }
 
+        public Customer getCustomerById(int id)
+        {
+            var customerCollection = CustomerCollection.Instance;
+            Customer selectedCustomer = customerCollection.customers
+                .SingleOrDefault(customer => customer.CustomerID == id);
+            if (selectedCustomer == null)
+            {
+                return null;
+            } else
+            {
+                return selectedCustomer;
+            }
+        }
+
     }
 }

@@ -3,11 +3,19 @@ using System.Threading.Tasks;
 using CarRental.Models;
 using System.Collections.Generic;
 using System.Linq;
+// NuGet Package for IBAN validation
+using IbanNet;
 
 namespace CarRental.Menus
 {
     public class CustomerMenu
     {
+        /// <summary>
+        /// Displays the Customer Menu to the User
+        /// </summary>
+        /// <returns>
+        /// A boolean value in order to stay or leave the menu.
+        /// </returns>
         public static bool CustomerMenuConsole()
         {
             Console.Clear();
@@ -35,7 +43,7 @@ namespace CarRental.Menus
                         Console.WriteLine("Kunde wurde geändert.");
                     } else
                     {
-                        Console.WriteLine("Noch keine Kunden angelegt.");
+                        Console.WriteLine("Keinen Kunden zur Eingabe gefunden.");
                     }
                     
                     Console.WriteLine("Zurück zum Hauptmenü.");
@@ -96,7 +104,8 @@ namespace CarRental.Menus
             Console.Write("Ort:");
             newCustomer.City = Console.ReadLine();
             Console.Write("IBAN:");
-            newCustomer.IBAN = Console.ReadLine();
+            string iban = checkIBAN(Console.ReadLine());            
+            newCustomer.IBAN = iban;
             Console.Write("Bitte Geburtsdatum im Format dd-MM-yyyy eingeben:");
             string v = Console.ReadLine();
             DateTime dt;
@@ -114,78 +123,64 @@ namespace CarRental.Menus
         public static Customer editCustomer()
         {
             var customerCollection = CustomerCollection.Instance;
-            int customerId;
             // if there are no customers we leave the method
             if (customerCollection.customers == null)
             {
                 return null;
             }
             Console.Clear();
+            Console.WriteLine("Bitte einen existierenden Kunden zur Bearbeitung auswählen:");
             foreach (Customer c in customerCollection.customers)
             {
                 Console.WriteLine(c);
             }
             Console.Write(Environment.NewLine);
             Console.Write("Kundennummer eingeben: ");
-            try
+            var v = Console.ReadLine();
+            Customer editedCustomer = getCustomerByIdDialog(v);
+            if (editedCustomer == null)
             {
-                customerId = Convert.ToInt32(Console.ReadLine());
+                return null;
             }
-            catch (Exception e)
-            {
-                throw new InvalidCastException("Bitte eine Nummer eingeben!", e);
-            }
+            // we have a editable customer now - go on
+            Console.Write(Environment.NewLine);
+            Console.WriteLine("Ohne Eingabe, bleibt der bisherige Wert bestehen.");
+            Console.WriteLine("Bisheriger Vorname: " + editedCustomer.FirstName);
+            Console.Write("Neuer Vorname: ");
+            v = Console.ReadLine();
+            editedCustomer.FirstName = !string.IsNullOrEmpty(v) ? v : editedCustomer.FirstName;
+            Console.WriteLine("Bisheriger Nachname: " + editedCustomer.LastName);
+            Console.Write("Neuer Nachname: ");
+            v = Console.ReadLine();
+            editedCustomer.LastName = !string.IsNullOrEmpty(v) ? v : editedCustomer.LastName;
+            Console.WriteLine("Bisherige Straße: " + editedCustomer.Street);
+            Console.Write("Neue Straße: ");
+            v = Console.ReadLine();
+            editedCustomer.Street = !string.IsNullOrEmpty(v) ? v : editedCustomer.Street;
+            Console.WriteLine("Bisherige Postleitzahl: " + editedCustomer.Postcode);
+            Console.Write("Neue PLZ: ");
+            v = Console.ReadLine();
+            editedCustomer.Postcode = !string.IsNullOrEmpty(v) ? v : editedCustomer.Postcode;
+            Console.WriteLine("Bisheriger Ort: " + editedCustomer.City);
+            Console.Write("Neuer Ort: ");
+            v = Console.ReadLine();
+            editedCustomer.City = !string.IsNullOrEmpty(v) ? v : editedCustomer.City;
+            Console.WriteLine("Bisherige IBAN: " + editedCustomer.IBAN);
+            Console.Write("Neue IBAN: ");
+            v = Console.ReadLine();
+            // only accept valid IBAN
+            editedCustomer.IBAN = !string.IsNullOrEmpty(v) ? checkIBAN(v) : editedCustomer.IBAN;
 
-            try
-            {
-                Customer editedCustomer = customerCollection.customers
-                .Single(customer => customer.CustomerID == customerId);
+            // save the changes to xml file
+            customerCollection.SerializeToXML(customerCollection.customers);
 
-                Console.Write(Environment.NewLine);
-                Console.WriteLine("Ohne Eingabe, bleibt der bisherige Wert bestehen.");
-                Console.WriteLine("Bisheriger Vorname: " + editedCustomer.FirstName);
-                Console.Write("Neuer Vorname: ");
-                string v = Console.ReadLine();
-                editedCustomer.FirstName = !string.IsNullOrEmpty(v) ? v : editedCustomer.FirstName;
-                Console.WriteLine("Bisheriger Nachname: " + editedCustomer.LastName);
-                Console.Write("Neuer Nachname: ");
-                v = Console.ReadLine();
-                editedCustomer.LastName = !string.IsNullOrEmpty(v) ? v : editedCustomer.LastName;
-                Console.WriteLine("Bisherige Straße: " + editedCustomer.Street);
-                Console.Write("Neue Straße: ");
-                v = Console.ReadLine();
-                editedCustomer.Street = !string.IsNullOrEmpty(v) ? v : editedCustomer.Street;
-                Console.WriteLine("Bisherige Postleitzahl: " + editedCustomer.Postcode);
-                Console.Write("Neue PLZ: ");
-                v = Console.ReadLine();
-                editedCustomer.Postcode = !string.IsNullOrEmpty(v) ? v : editedCustomer.Postcode;
-                Console.WriteLine("Bisheriger Ort: " + editedCustomer.City);
-                Console.Write("Neuer Ort: ");
-                v = Console.ReadLine();
-                editedCustomer.City = !string.IsNullOrEmpty(v) ? v : editedCustomer.City;
-                Console.WriteLine("Bisherige IBAN: " + editedCustomer.IBAN);
-                Console.Write("Neue IBAN: ");
-                v = Console.ReadLine();
-                editedCustomer.IBAN = !string.IsNullOrEmpty(v) ? v : editedCustomer.IBAN;
-
-                // save the changes to xml file
-                customerCollection.SerializeToXML(customerCollection.customers);
-
-
-                return editedCustomer;
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Daten nicht gefunden. Bitte valide Kundennummer eingeben.", e);
-            }
-
+            return editedCustomer;
             
         }
 
         public static void deleteCustomer()
         {
             var customerCollection = CustomerCollection.Instance;
-            int customerId;
             // if there are no customers we leave the method
             if (customerCollection.customers == null)
             {
@@ -194,50 +189,40 @@ namespace CarRental.Menus
                 return;
             }
             Console.Clear();
+            Console.WriteLine("Bitte einen existierenden Kunden zur Löschung auswählen:");
             foreach (Customer c in customerCollection.customers)
             {
                 Console.WriteLine(c);
             }
             Console.Write(Environment.NewLine);
             Console.Write("Kundennummer eingeben: ");
-            try
+            var v = Console.ReadLine();
+            Customer deleteCustomer = getCustomerByIdDialog(v);
+            if (deleteCustomer == null)
             {
-                customerId = Convert.ToInt32(Console.ReadLine());
-                Customer deleteCustomer = customerCollection.customers
-                .First(customer => customer.CustomerID == customerId);
-                Console.Write(Environment.NewLine);
-                Console.Write("Soll der Kunde " + deleteCustomer + "wirklich gelöscht werden? (j/n): ");
-                switch (Console.ReadLine())
-                {
-                    case "j":
-                        customerCollection.customers.Remove(deleteCustomer);
-                        Console.WriteLine("Kunde wurde gelöscht");
-                        // save the changes to xml file
-                        customerCollection.SerializeToXML(customerCollection.customers);
-                        break;
-                    default:
-                        Console.WriteLine("Löschen abgebrochen");
-                        break;
-                }
+                Console.WriteLine("Kein Kunde mit dieser ID vorhanden");
+                Task.Delay(2000).Wait();
+                return;
             }
-            catch (InvalidCastException e)
+            Console.Write(Environment.NewLine);
+            Console.Write("Soll der Kunde " + deleteCustomer + "wirklich gelöscht werden? (j/n): ");
+            switch (Console.ReadLine())
             {
-                throw new InvalidCastException("Bitte eine Nummer eingeben!", e);
-            }
-            catch (FormatException e)
-            {
-                throw new InvalidCastException("Bitte eine valide Kundennummer eingeben - keine Buchstaben!", e);
-            }
-            catch (InvalidOperationException e)
-            {
-                throw new InvalidOperationException("Die angegebene Kundennummer wurde nicht gefunden", e);
-            }
+                case "j":
+                    customerCollection.customers.Remove(deleteCustomer);
+                    Console.WriteLine("Kunde wurde gelöscht");
+                    // save the changes to xml file
+                    customerCollection.SerializeToXML(customerCollection.customers);
+                    break;
+                default:
+                    Console.WriteLine("Löschen abgebrochen");
+                    break;
+            }  
         }
 
         public static string showCustomer()
         {
             var customerCollection = CustomerCollection.Instance;
-            int customerId;
             // if there are no customers we leave the method
             if (customerCollection.customers == null)
             {
@@ -252,25 +237,67 @@ namespace CarRental.Menus
             }
             Console.Write(Environment.NewLine);
             Console.Write("Kundennummer eingeben zur Ausgabe der Kundendetails: ");
-            try
+            var v = Console.ReadLine();
+            Customer showCustomer = getCustomerByIdDialog(v);
+            if (showCustomer == null)
             {
-                customerId = Convert.ToInt32(Console.ReadLine());
-                Customer showCustomer = customerCollection.customers
-                .First(customer => customer.CustomerID == customerId);
-                Console.Write(Environment.NewLine);
-                return showCustomer.customerDetails();
+                return "Kein Kunde zu eingegebener ID gefunden.";
             }
-            catch (InvalidCastException e)
+            Console.Write(Environment.NewLine);
+            return showCustomer.customerDetails();
+        }
+
+
+        // Helper functions
+
+        /// <summary>
+        /// Checks if a entered IBAN is valid.
+        /// </summary>
+        /// <param name="iban"></param>
+        /// <returns>A valid IBAN.</returns>
+        public static string checkIBAN(string iban)
+        {
+            IIbanValidator ibanChecker = new IbanValidator();
+            ValidationResult validationResult = ibanChecker.Validate(iban);
+            while (!validationResult.IsValid)
             {
-                throw new InvalidCastException("Bitte eine Nummer eingeben!", e);
+                Console.WriteLine("Bitte eine gültige IBAN eingeben!");
+                iban = Console.ReadLine();
+                validationResult = ibanChecker.Validate(iban);
             }
-            catch (FormatException e)
+            return iban;
+        }
+
+        /// <summary>
+        /// Gets a customer by ID and checks the input of the dialog
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>
+        /// A selected customer or null.
+        /// </returns>
+        public static Customer getCustomerByIdDialog(string id)
+        {
+            var customerCollection = CustomerCollection.Instance;
+            int customerId = 0;
+            // make sure we got a number as input
+            if (!string.IsNullOrEmpty(id))
             {
-                throw new InvalidCastException("Bitte eine valide Kundennummer eingeben - keine Buchstaben!", e);
+                int ci;
+                while (!Int32.TryParse(id, out ci))
+                {
+                    Console.WriteLine("Bitte eine gültige Zahl eingeben!");
+                    id = Console.ReadLine();
+                }
+                customerId = ci;
             }
-            catch (InvalidOperationException e)
+            // make sure we get a valid customer with the given id
+            Customer editedCustomer = customerCollection.getCustomerById(customerId);
+            if (editedCustomer == null)
             {
-                throw new InvalidOperationException("Die angegebene Kundennummer wurde nicht gefunden", e);
+                return null;
+            } else
+            {
+                return editedCustomer;
             }
         }
     }

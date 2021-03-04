@@ -8,6 +8,12 @@ namespace CarRental.Menus
 {
     public class BookingMenu
     {
+        /// <summary>
+        /// Displays the Booking Menu to the user
+        /// </summary>
+        /// <returns>
+        /// A boolean value in order to leave or stay in menu
+        /// </returns>
         public static bool BookingMenuConsole()
         {
             Console.Clear();
@@ -29,8 +35,15 @@ namespace CarRental.Menus
                     Task.Delay(2000).Wait();
                     return false;
                 case "2":
-                    var editedCar = editBooking();
-                    Console.WriteLine("Auto wurde geändert.");
+                    var editedBooking = editBooking();
+                    if (editedBooking != null)
+                    {
+                        Console.WriteLine("Buchung wurde geändert.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Keine Buchung zum Kunden gefunden.");
+                    }
                     Task.Delay(2000).Wait();
                     Console.WriteLine("Zurück zum Hauptmenü.");
                     return false;
@@ -58,6 +71,12 @@ namespace CarRental.Menus
 
         }
 
+        /// <summary>
+        /// Creates a new booking
+        /// </summary>
+        /// <returns>
+        /// A newly created booking
+        /// </returns>
         public static Booking createBooking()
         {
             var bookingCollection = BookingCollection.Instance;
@@ -86,7 +105,17 @@ namespace CarRental.Menus
             {
                 Console.WriteLine(customer);
             }
-            newBooking.CustomerID = Convert.ToInt32(Console.ReadLine());
+            var v = Console.ReadLine();
+            if (!string.IsNullOrEmpty(v))
+            {
+                int ci;
+                while (!Int32.TryParse(v, out ci))
+                {
+                    Console.WriteLine("Bitte eine gültige Zahl eingeben!");
+                    v = Console.ReadLine();
+                }
+                newBooking.CustomerID = ci;
+            }
             Console.WriteLine("Kategorie des Autos - bitte wählen:");
             foreach (CarCategory carCategory in carCategoryCollection.carCategories)
             {
@@ -103,7 +132,7 @@ namespace CarRental.Menus
             }
             newBooking.CarID = Convert.ToInt32(Console.ReadLine());
             Console.Write("Bitte Startdatum der Buchung im Format dd-MM-yyyy eingeben:");
-            string v = Console.ReadLine();
+            v = Console.ReadLine();
             DateTime dt;
             while (!DateTime.TryParseExact(v, "dd-MM-yyyy", null, System.Globalization.DateTimeStyles.None, out dt))
             {
@@ -125,137 +154,249 @@ namespace CarRental.Menus
             return newBooking;
         }
 
+        /// <summary>
+        /// Method for editing existing bookings
+        /// </summary>
+        /// <returns>
+        /// The edited booking or null.
+        /// </returns>
         public static Booking editBooking()
         {
             var bookingCollection = BookingCollection.Instance;
-            int bookingId;
-            // if there are no bookings we leave the method
-            if (bookingCollection.bookings == null)
+            var customerCollection = CustomerCollection.Instance;
+            var carCategoryCollection = CarCategoryCollection.Instance;
+            var carCollection = CarCollection.Instance;
+     
+            Booking editedBooking = getBookingByCustomerDialog();
+            if (editedBooking == null)
             {
                 return null;
             }
-            Console.Clear();
-            foreach (Booking record in bookingCollection.bookings)
+
+            Console.Write(Environment.NewLine);
+            Console.WriteLine("Ohne Eingabe, bleibt der bisherige Wert bestehen.");
+
+            //Kunde ändern
+            Console.WriteLine("Bisheriger Kunde: " + editedBooking.CustomerID);
+            Console.WriteLine("Neuer Kunde - bitte auswählen: ");
+            foreach (Customer record in customerCollection.customers)
             {
                 Console.WriteLine(record);
             }
-            Console.Write(Environment.NewLine);
-            Console.Write("Buchungsnummer eingeben: ");
-            try
+            Console.WriteLine("Kundennummer eingeben:");
+            var v = Console.ReadLine();
+            if (!string.IsNullOrEmpty(v))
             {
-                bookingId = Convert.ToInt32(Console.ReadLine());
-            }
-            catch (Exception e)
+                int ci;
+                while (!Int32.TryParse(v, out ci))
+                {
+                    Console.WriteLine("Bitte eine gültige Zahl eingeben!");
+                    v = Console.ReadLine();
+                }
+                editedBooking.CustomerID = ci;
+            } else
             {
-                throw new InvalidCastException("Bitte eine Nummer eingeben!", e);
+                // leave the id as it is
+                editedBooking.CustomerID = editedBooking.CustomerID;
             }
-
-            try
+            //Kategorie ändern
+            Console.WriteLine("Bisheriger Kategorie: " + editedBooking.CarCategoryID);
+            Console.WriteLine("Neue Kategorie - bitte auswählen: ");
+            foreach (CarCategory carCategory in carCategoryCollection.carCategories)
             {
-                Booking editedBooking = bookingCollection.bookings
-                .Single(booking => booking.BookingID == bookingId);
-
-                Console.Write(Environment.NewLine);
-                Console.WriteLine("Ohne Eingabe, bleibt der bisherige Wert bestehen.");
-
-                //Kunde
-                //Kategorie
-                //Auto
-                //Startdatum
-                //Enddatum
-                Console.WriteLine("Bisheriger Kunde: " + editedBooking.CustomerID);
-                Console.Write("Neuer Kunde: ");
-                string v = Console.ReadLine();
-                
-
-                // save the changes to xml file
-                bookingCollection.SerializeToXML(bookingCollection.bookings);
-
-
-                return editedBooking;
+                Console.WriteLine(carCategory);
             }
-            catch (Exception e)
+            v = Console.ReadLine();
+            if (!string.IsNullOrEmpty(v))
             {
-                throw new Exception("Daten nicht gefunden. Bitte valide Kundennummer eingeben.", e);
+                int cc;
+                while (!Int32.TryParse(v, out cc))
+                {
+                    Console.WriteLine("Bitte eine gültige Zahl eingeben!");
+                    v = Console.ReadLine();
+                }
+                editedBooking.CarCategoryID = cc;
             }
+            else
+            {
+                // leave the id as it is
+                editedBooking.CarCategoryID = editedBooking.CarCategoryID;
+            }
+            //Auto ändern
+            Console.WriteLine("Bisheriges Auto: " + editedBooking.CarID);
+            Console.WriteLine("Auto aus der gewählten Kategorie - bitte auswählen:");
+            var possibleCars = carCollection.cars
+                .Where(records => records.CarCategoryID == editedBooking.CarCategoryID)
+                .ToList();
+            foreach (Car car in possibleCars)
+            {
+                Console.WriteLine(car);
+            }
+            v = Console.ReadLine();
+            if (!string.IsNullOrEmpty(v))
+            {
+                int car;
+                while (!Int32.TryParse(v, out car))
+                {
+                    Console.WriteLine("Bitte eine gültige Zahl eingeben!");
+                    v = Console.ReadLine();
+                }
+                editedBooking.CarID = car;
+            }
+            else
+            {
+                // leave the id as it is
+                editedBooking.CarID = editedBooking.CarID;
+            }
+            //Startdatum ändern
+            Console.WriteLine("Bisheriges Startdatum " + editedBooking.StartDate.ToString("dd.MM.yyyy"));
+            Console.Write("Bitte Startdatum der Buchung im Format dd-MM-yyyy eingeben:");
+            v = Console.ReadLine();
+            DateTime dt;
+            while (!DateTime.TryParseExact(v, "dd-MM-yyyy", null, System.Globalization.DateTimeStyles.None, out dt))
+            {
+                Console.WriteLine("Datums Eingabe bitte im genannten Format vornehmen.");
+                v = Console.ReadLine();
+            }
+            editedBooking.StartDate = dt;
+            //Enddatum ändern
+            Console.WriteLine("Bisheriges Enddatum " + editedBooking.EndDate.ToString("dd.MM.yyyy"));
+            Console.Write("Bitte Endedatum im Format dd-MM-yyyy eingeben:");
+            v = Console.ReadLine();
+            while (!DateTime.TryParseExact(v, "dd-MM-yyyy", null, System.Globalization.DateTimeStyles.None, out dt))
+            {
+                Console.WriteLine("Datums Eingabe bitte im genannten Format vornehmen.");
+                v = Console.ReadLine();
+            }
+            editedBooking.EndDate = dt;
+
+            // save the changes to xml file
+            bookingCollection.SerializeToXML(bookingCollection.bookings);
+
+
+            return editedBooking;
+            
+           
         }
 
+        /// <summary>
+        /// Method for deleting existing bookings.
+        /// </summary>
         public static void deleteBooking()
         {
             var bookingCollection = BookingCollection.Instance;
-            int bookingId;
             Console.Clear();
-            foreach (Booking booking in bookingCollection.bookings)
+            Booking deleteBooking = getBookingByCustomerDialog();
+            if (deleteBooking == null)
             {
-                Console.WriteLine(booking);
+                return;
             }
             Console.Write(Environment.NewLine);
-            Console.Write("Buchungs-ID eingeben: ");
-            try
+            Console.Write("Soll die Buchung " + deleteBooking + "wirklich gelöscht werden? (j/n): ");
+            switch (Console.ReadLine())
             {
-                bookingId = Convert.ToInt32(Console.ReadLine());
-                Booking deleteBooking = bookingCollection.bookings
-                .Single(booking => booking.BookingID == bookingId);
-                Console.Write(Environment.NewLine);
-                Console.Write("Soll die Buchung " + deleteBooking + "wirklich gelöscht werden? (j/n): ");
-                switch (Console.ReadLine())
-                {
-                    case "j":
-                        bookingCollection.bookings.Remove(deleteBooking);
-                        Console.WriteLine("Buchung wurde gelöscht");
-                        // save the changes to xml file
-                        bookingCollection.SerializeToXML(bookingCollection.bookings);
-                        break;
-                    default:
-                        Console.WriteLine("Löschen abgebrochen");
-                        break;
-                }
+                case "j":
+                    bookingCollection.bookings.Remove(deleteBooking);
+                    Console.WriteLine("Buchung wurde gelöscht");
+                    // save the changes to xml file
+                    bookingCollection.SerializeToXML(bookingCollection.bookings);
+                    break;
+                default:
+                    Console.WriteLine("Löschen abgebrochen");
+                    break;
             }
-            catch (InvalidCastException e)
-            {
-                throw new InvalidCastException("Bitte eine Nummer eingeben!", e);
-            }
-            catch (FormatException e)
-            {
-                throw new InvalidCastException("Bitte eine valide Buchungs-ID eingeben - keine Buchstaben!", e);
-            }
-            catch (InvalidOperationException e)
-            {
-                throw new InvalidOperationException("Die angegebene Buchungs-ID wurde nicht gefunden", e);
-            }
+           
         }
 
+        /// <summary>
+        /// Method for showing all the details of a booking
+        /// </summary>
+        /// <returns>
+        /// String with the details of the selected booking
+        /// </returns>
         public static string showBooking()
         {
             var bookingCollection = BookingCollection.Instance;
-            int bookingId;
             Console.Clear();
-            foreach (Booking booking in bookingCollection.bookings)
+            if (!bookingCollection.bookingExists())
+            {
+                return "Keine Buchungen vorhanden";
+            }
+            Booking showBooking = getBookingByCustomerDialog();
+            Console.Write(Environment.NewLine);
+            if (showBooking != null)
+            {
+                return showBooking.showDetails();
+            } else
+            {
+                return "Keine Buchung zur ID gefunden. Bitte Eingabe prüfen.";
+            }
+        }
+
+        // Helper functions
+
+        /// <summary>
+        /// Chooses a booking by selecting the customer first.
+        /// </summary>
+        /// <returns>
+        /// The booking we want to edit.
+        /// </returns>
+        public static Booking getBookingByCustomerDialog()
+        {
+            var customerCollection = CustomerCollection.Instance;
+            var bookingCollection = BookingCollection.Instance;
+            int customerId = 0;
+            int bookingId = 0;
+            Console.WriteLine("Für welchen Kunden soll eine Buchung ausgewählt werden?");
+            foreach (Customer record in customerCollection.customers)
+            {
+                Console.WriteLine(record);
+            }
+            Console.WriteLine("Kundennummer eingeben:");
+            var v = Console.ReadLine();
+            if (!string.IsNullOrEmpty(v))
+            {
+                int ci;
+                while (!Int32.TryParse(v, out ci))
+                {
+                    Console.WriteLine("Bitte eine gültige Zahl eingeben!");
+                    v = Console.ReadLine();
+                }
+                customerId = ci;
+            }
+            var possibleBookings = bookingCollection.getBookingByCustomer(customerId);
+            if (possibleBookings.Count == 0)
+            {
+                return null;
+            }
+            Console.WriteLine("Bitte eine der folgenden Buchungen wählen:");
+            foreach (Booking booking in possibleBookings)
             {
                 Console.WriteLine(booking);
             }
             Console.Write(Environment.NewLine);
-            Console.Write("Buchungs-ID eingeben: ");
-            try
+            Console.Write("Buchungsnummer eingeben: ");
+            v = Console.ReadLine();
+            if (!string.IsNullOrEmpty(v))
             {
-                bookingId = Convert.ToInt32(Console.ReadLine());
-                // get the car by id
-                Booking showBooking = bookingCollection.bookings
-                    .Single(record => record.BookingID == bookingId);
-                Console.Write(Environment.NewLine);
-                return showBooking.showDetails();
+                int bi;
+                while (!Int32.TryParse(v, out bi))
+                {
+                    Console.WriteLine("Bitte eine gültige Zahl eingeben!");
+                    v = Console.ReadLine();
+                }
+                bookingId = bi;
             }
-            catch (InvalidCastException e)
+
+            Booking editedBooking = possibleBookings
+                .SingleOrDefault(booking => booking.BookingID == bookingId);
+            // check if the booking exists or return
+            if (editedBooking == null)
             {
-                throw new InvalidCastException("Bitte eine Nummer eingeben!", e);
-            }
-            catch (FormatException e)
+                return null;
+            } else
             {
-                throw new InvalidCastException("Bitte eine valide Buchungs-ID eingeben - keine Buchstaben!", e);
-            }
-            catch (InvalidOperationException e)
-            {
-                throw new InvalidOperationException("Die angegebene Buchungs-ID wurde nicht gefunden", e);
+                return editedBooking;
             }
         }
     }

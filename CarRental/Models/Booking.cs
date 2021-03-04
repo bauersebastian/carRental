@@ -53,7 +53,7 @@ namespace CarRental.Models
 
         public override string ToString()
         {
-            return ("ID: " + BookingID);
+            return ("ID: " + BookingID + " / Buchung vom " + StartDate.ToString("dd.MM.yyyy") + " bis " + EndDate.ToString("dd.MM.yyyy"));
         }
 
         public string showDetails()
@@ -77,5 +77,6 @@ namespace CarRental.Models
                 + "Anzahl Leihtage: " + RentalDays +"\n"
                 + "Gesamtkosten: " + TotalCost + "\n");
         }
+        
     }
 }

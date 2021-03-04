@@ -4,7 +4,7 @@
     <CustomerID>1</CustomerID>
     <FirstName>Sebastian</FirstName>
     <LastName>Bauer</LastName>
-    <IBAN>DE23rqw3</IBAN>
+    <IBAN>DE02200505501015871393</IBAN>
     <Street>Jahnstraße 15</Street>
     <Postcode>97447</Postcode>
     <City>Gerolzhofen</City>
@@ -14,10 +14,20 @@
     <CustomerID>2</CustomerID>
     <FirstName>Heidi</FirstName>
     <LastName>Bauer</LastName>
-    <IBAN>DAD234u</IBAN>
+    <IBAN>DE02100100100006820101</IBAN>
     <Street>Untere Dorfstraße 28</Street>
     <Postcode>97519</Postcode>
     <City>Kleinsteinach</City>
     <Birthday>1958-09-24T00:00:00</Birthday>
+  </Customer>
+  <Customer>
+    <CustomerID>3</CustomerID>
+    <FirstName>Tiberius</FirstName>
+    <LastName>Bauer</LastName>
+    <IBAN>DE02300209000106531065</IBAN>
+    <Street>Jahnstraße 15</Street>
+    <Postcode>97447</Postcode>
+    <City>Gerolzhofen</City>
+    <Birthday>2021-04-29T00:00:00</Birthday>
   </Customer>
 </ArrayOfCustomer>

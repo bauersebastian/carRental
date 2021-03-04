@@ -65,5 +65,58 @@ namespace CarRental.Models
 
             return bookings;
         }
+
+        // Helper functions
+        public bool bookingExists(int id = 1)
+        {
+            var bookingCollection = BookingCollection.Instance;
+            if (bookingCollection.bookings.Count == 0)
+            {
+                return false;
+            }
+            else
+            {
+                Booking showBooking = bookingCollection.bookings
+                    .SingleOrDefault(record => record.BookingID == id);
+                if (showBooking != null)
+                {
+                    return true;
+                } else
+                {
+                    return false;
+                }
+            }
+        }
+
+        public Booking getBooking(int id = 1)
+        {
+            var bookingCollection = BookingCollection.Instance;
+            if (bookingCollection.bookings.Count == 0)
+            {
+                return null;
+            }
+            else
+            {
+                Booking showBooking = bookingCollection.bookings
+                    .SingleOrDefault(record => record.BookingID == id);
+                if (showBooking != null)
+                {
+                    return showBooking;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        public List<Booking> getBookingByCustomer(int id)
+        {
+            var bookingCollection = BookingCollection.Instance;
+            var possibleBookings = bookingCollection.bookings
+                .Where(records => records.CustomerID == id)
+                .ToList();
+            return possibleBookings;
+        }
     }
 }
