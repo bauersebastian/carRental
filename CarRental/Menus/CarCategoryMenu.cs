@@ -7,6 +7,12 @@ namespace CarRental.Menus
 {
     public class CarCategoryMenu
     {
+        /// <summary>
+        /// Shows the Car Category Menu to the user
+        /// </summary>
+        /// <returns>
+        /// A boolean value if we should show the menu or not
+        /// </returns>
         public static bool CarCategoryMenuConsole()
         {
             Console.Clear();
@@ -28,7 +34,10 @@ namespace CarRental.Menus
                     return false;
                 case "2":
                     var editedCarCategory = editCarCategory();
-                    Console.WriteLine("Kategorie wurde geändert.");
+                    if (editedCarCategory != null)
+                    {
+                        Console.WriteLine("Kategorie wurde geändert.");
+                    }
                     Console.WriteLine("Zurück zum Hauptmenü.");
                     Task.Delay(2000).Wait();
                     return false;
@@ -48,6 +57,12 @@ namespace CarRental.Menus
             }
         }
 
+        /// <summary>
+        /// Method for creating a new car category.
+        /// </summary>
+        /// <returns>
+        /// The object of the newly created car category
+        /// </returns>
         public static CarCategory createCarCategory()
         {
             var carCategoryCollection = CarCategoryCollection.Instance;
@@ -71,16 +86,34 @@ namespace CarRental.Menus
             Console.Write("Bezeichnung:");
             newCarCategory.Name = Console.ReadLine();
             Console.Write("Tagesgebühr:");
-            newCarCategory.RentalFeeDay = Convert.ToInt32(Console.ReadLine());
+            var v = Console.ReadLine();
+            if (!string.IsNullOrEmpty(v))
+            {
+                int fee;
+                while (!Int32.TryParse(v, out fee))
+                {
+                    Console.WriteLine("Bitte eine gültige Zahl eingeben!");
+                    v = Console.ReadLine();
+                }
+                newCarCategory.RentalFeeDay = fee;
+            }
+            // Add the category and save it
             carCategoryCollection.carCategories.Add(newCarCategory);
             carCategoryCollection.SerializeToXML(carCategoryCollection.carCategories);
             return newCarCategory;
         }
 
+        /// <summary>
+        /// Method for editing existing Car Categories
+        /// </summary>
+        /// <returns>
+        /// The edited car category or null, if the category was not found.
+        /// </returns>
         public static CarCategory editCarCategory()
         {
             var carCategoryCollection = CarCategoryCollection.Instance;
-            int carCategoryId;
+            // initialize carCategoryId
+            int carCategoryId = 0;
             Console.Clear();
             foreach (CarCategory cc in carCategoryCollection.carCategories)
             {
@@ -88,53 +121,58 @@ namespace CarRental.Menus
             }
             Console.Write(Environment.NewLine);
             Console.Write("Autokategorie ID eingeben: ");
-            try
+            var v = Console.ReadLine();
+            if (!string.IsNullOrEmpty(v))
             {
-                carCategoryId = Convert.ToInt32(Console.ReadLine());
-            }
-            catch (Exception e)
-            {
-                throw new InvalidCastException("Bitte eine Nummer eingeben!", e);
-            }
-
-            try
-            {
-                CarCategory editedCarCategory = carCategoryCollection.carCategories
-                .Single(carCategory => carCategory.CarCategoryID == carCategoryId);
-
-                Console.Write(Environment.NewLine);
-                Console.WriteLine("Ohne Eingabe, bleibt der bisherige Wert bestehen.");
-                Console.WriteLine("Bisherige Bezeichnung: " + editedCarCategory.Name);
-                Console.Write("Neue Bezeichnung: ");
-                string v = Console.ReadLine();
-                editedCarCategory.Name = !string.IsNullOrEmpty(v) ? v : editedCarCategory.Name;
-                Console.WriteLine("Bisherige Tagesgebühr: " + editedCarCategory.RentalFeeDay);
-                Console.Write("Neue Tagesgebühr: ");
-                v = Console.ReadLine();
-                if (!string.IsNullOrEmpty(v)) {
-                    int vdec = Convert.ToInt32(v);
-                    editedCarCategory.RentalFeeDay = vdec > 0 ? vdec : editedCarCategory.RentalFeeDay;
+                int cc;
+                while (!Int32.TryParse(v, out cc))
+                {
+                    Console.WriteLine("Bitte eine gültige Zahl eingeben!");
+                    v = Console.ReadLine();
                 }
-
-                // save the changes to xml file
-                carCategoryCollection.SerializeToXML(carCategoryCollection.carCategories);
-
-
-                return editedCarCategory;
+                carCategoryId = cc;
             }
-            catch (Exception e)
+
+            CarCategory editedCarCategory = carCategoryCollection.getCarCategoryById(carCategoryId);
+            if (editedCarCategory == null)
             {
-
-                throw new Exception("Daten nicht gefunden. Bitte valide Autokategorie ID eingeben.", e);
+                Console.WriteLine("Keine Autokategorie mit dieser ID gefunden.");
+                Task.Delay(2000).Wait();
+                return null;
             }
+            Console.Write(Environment.NewLine);
+            Console.WriteLine("Ohne Eingabe, bleibt der bisherige Wert bestehen.");
+            Console.WriteLine("Bisherige Bezeichnung: " + editedCarCategory.Name);
+            Console.Write("Neue Bezeichnung: ");
+            v = Console.ReadLine();
+            editedCarCategory.Name = !string.IsNullOrEmpty(v) ? v : editedCarCategory.Name;
+            Console.WriteLine("Bisherige Tagesgebühr: " + editedCarCategory.RentalFeeDay);
+            Console.Write("Neue Tagesgebühr: ");
+            v = Console.ReadLine();
+            Decimal fee;
+            if (!string.IsNullOrEmpty(v)) {
+                while (!Decimal.TryParse(v, out fee))
+                {
+                    Console.WriteLine("Bitte eine gültige Zahl eingeben!");
+                    v = Console.ReadLine();
+                }
+                editedCarCategory.RentalFeeDay = fee > 0 ? fee : editedCarCategory.RentalFeeDay;
+            }
+            // save the changes to xml file
+            carCategoryCollection.SerializeToXML(carCategoryCollection.carCategories);
 
+
+            return editedCarCategory;
 
         }
 
+        /// <summary>
+        /// Method for deleting existing Car Categories.
+        /// </summary>
         public static void deleteCarCategory()
         {
             var carCategoryCollection = CarCategoryCollection.Instance;
-            int carCategoryId;
+            int carCategoryId = 0;
             Console.Clear();
             foreach (CarCategory cc in carCategoryCollection.carCategories)
             {
@@ -142,39 +180,39 @@ namespace CarRental.Menus
             }
             Console.Write(Environment.NewLine);
             Console.Write("Autokategorie ID eingeben: ");
-            try
+            var v = Console.ReadLine();
+            if (!string.IsNullOrEmpty(v))
             {
-                carCategoryId = Convert.ToInt32(Console.ReadLine());
-                CarCategory deleteCarCategory = carCategoryCollection.carCategories
-                .First(carCategory => carCategory.CarCategoryID == carCategoryId);
-                Console.Write(Environment.NewLine);
-                Console.Write("Soll die Autokategorie " + deleteCarCategory + "wirklich gelöscht werden? (j/n): ");
-                switch (Console.ReadLine())
+                int cc;
+                while (!Int32.TryParse(v, out cc))
                 {
-                    case "j":
-                        carCategoryCollection.carCategories.Remove(deleteCarCategory);
-                        Console.WriteLine("Autokategorie wurde gelöscht");
-                        // save the changes to xml file
-                        carCategoryCollection.SerializeToXML(carCategoryCollection.carCategories);
-                        break;
-                    default:
-                        Console.WriteLine("Löschen abgebrochen");
-                        break;
+                    Console.WriteLine("Bitte eine gültige Zahl eingeben!");
+                    v = Console.ReadLine();
                 }
+                carCategoryId = cc;
             }
-            catch (InvalidCastException e)
+            CarCategory deleteCarCategory = carCategoryCollection.getCarCategoryById(carCategoryId);
+            if (deleteCarCategory == null)
             {
-                throw new InvalidCastException("Bitte eine Nummer eingeben!", e);
+                Console.WriteLine("Keine Autokategorie mit dieser ID gefunden.");
+                Task.Delay(2000).Wait();
+                return;
             }
-            catch (FormatException e)
+            Console.Write(Environment.NewLine);
+            Console.WriteLine("Hinweis: Abhängige Daten wie z.B. Buchungen werden nicht verändert oder gelöscht.");
+            Console.Write("Soll die Autokategorie " + deleteCarCategory + " wirklich gelöscht werden? (j/n): ");
+            switch (Console.ReadLine())
             {
-                throw new InvalidCastException("Bitte eine valide Autokategorie ID eingeben - keine Buchstaben!", e);
+                case "j":
+                    carCategoryCollection.carCategories.Remove(deleteCarCategory);
+                    Console.WriteLine("Autokategorie wurde gelöscht");
+                    // save the changes to xml file
+                    carCategoryCollection.SerializeToXML(carCategoryCollection.carCategories);
+                    break;
+                default:
+                    Console.WriteLine("Löschen abgebrochen");
+                    break;
             }
-            catch (InvalidOperationException e)
-            {
-                throw new InvalidOperationException("Die angegebene Autokategorie ID wurde nicht gefunden", e);
-            }
-
         }
     }
 }

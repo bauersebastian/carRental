@@ -65,5 +65,22 @@ namespace CarRental.Models
             return carCategories;
         }
 
+        // Helper functions
+
+        public CarCategory getCarCategoryById(int id)
+        {
+            var carCategoryCollection = CarCategoryCollection.Instance;
+            CarCategory selectedCarCategory = carCategoryCollection.carCategories
+                .SingleOrDefault(carCategory => carCategory.CarCategoryID == id);
+            if (selectedCarCategory == null)
+            {
+                return null;
+            }
+            else
+            {
+                return selectedCarCategory;
+            }
+        }
+
     }
 }

@@ -15,4 +15,9 @@
     <Name>Obere Mittelklasse</Name>
     <RentalFeeDay>78</RentalFeeDay>
   </CarCategory>
+  <CarCategory>
+    <CarCategoryID>4</CarCategoryID>
+    <Name>Oberklasse</Name>
+    <RentalFeeDay>150</RentalFeeDay>
+  </CarCategory>
 </ArrayOfCarCategory>
