@@ -32,7 +32,7 @@ namespace CarRental.Models
 
         public override string ToString()
         {
-            return ("ID: " + CarID + " " + Model + " " + Brand);
+            return ("ID: " + CarID + " " + Brand + " " + Model);
         }
 
         public string carDetails()

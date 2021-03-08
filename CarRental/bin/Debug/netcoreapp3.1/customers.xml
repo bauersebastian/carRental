@@ -2,32 +2,22 @@
 <ArrayOfCustomer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Customer>
     <CustomerID>1</CustomerID>
-    <FirstName>Sebastian</FirstName>
-    <LastName>Bauer</LastName>
-    <IBAN>DE02200505501015871393</IBAN>
-    <Street>Jahnstraße 15</Street>
-    <Postcode>97447</Postcode>
-    <City>Gerolzhofen</City>
-    <Birthday>1986-08-27T00:00:00</Birthday>
+    <FirstName>Max</FirstName>
+    <LastName>Müller</LastName>
+    <IBAN>DE89 3704 0044 0532 0130 00</IBAN>
+    <Street>Musterstraße 5</Street>
+    <Postcode>97506</Postcode>
+    <City>Grafenrheinfeld</City>
+    <Birthday>1980-08-28T00:00:00</Birthday>
   </Customer>
   <Customer>
     <CustomerID>2</CustomerID>
-    <FirstName>Heidi</FirstName>
-    <LastName>Bauer</LastName>
-    <IBAN>DE02100100100006820101</IBAN>
-    <Street>Untere Dorfstraße 28</Street>
-    <Postcode>97519</Postcode>
-    <City>Kleinsteinach</City>
-    <Birthday>1958-09-24T00:00:00</Birthday>
-  </Customer>
-  <Customer>
-    <CustomerID>3</CustomerID>
-    <FirstName>Tiberius</FirstName>
-    <LastName>Bauer</LastName>
-    <IBAN>DE02300209000106531065</IBAN>
-    <Street>Jahnstraße 15</Street>
+    <FirstName>Marius</FirstName>
+    <LastName>Wagner</LastName>
+    <IBAN>DE89 3704 0044 0532 0130 00</IBAN>
+    <Street>Mühlenstraße 4</Street>
     <Postcode>97447</Postcode>
     <City>Gerolzhofen</City>
-    <Birthday>2021-04-29T00:00:00</Birthday>
+    <Birthday>1987-08-29T00:00:00</Birthday>
   </Customer>
 </ArrayOfCustomer>

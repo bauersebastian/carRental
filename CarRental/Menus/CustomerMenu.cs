@@ -124,7 +124,7 @@ namespace CarRental.Menus
         {
             var customerCollection = CustomerCollection.Instance;
             // if there are no customers we leave the method
-            if (customerCollection.customers == null)
+            if (customerCollection.customers.Count == 0)
             {
                 return null;
             }
@@ -182,7 +182,7 @@ namespace CarRental.Menus
         {
             var customerCollection = CustomerCollection.Instance;
             // if there are no customers we leave the method
-            if (customerCollection.customers == null)
+            if (customerCollection.customers.Count == 0)
             {
                 Console.WriteLine("Keine Kunden vorhanden");
                 Task.Delay(2000).Wait();
@@ -224,11 +224,9 @@ namespace CarRental.Menus
         {
             var customerCollection = CustomerCollection.Instance;
             // if there are no customers we leave the method
-            if (customerCollection.customers == null)
+            if (customerCollection.customers.Count == 0)
             {
-                Console.WriteLine("Keine Kunden vorhanden");
-                Task.Delay(2000).Wait();
-                return "keine Kunden";
+                return "Keine Kunden vorhanden";
             }
             Console.Clear();
             foreach (Customer c in customerCollection.customers)

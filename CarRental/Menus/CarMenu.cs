@@ -24,13 +24,26 @@ namespace CarRental.Menus
             {
                 case "1":
                     var car = createCar();
-                    Console.WriteLine("Auto wurde angelegt");
+                    if (car != null)
+                    {
+                        Console.WriteLine("Auto wurde angelegt");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Das Auto konnte nicht angelegt werden. Bitte Eingaben prüfen.");
+                    }
                     Console.WriteLine("Zurück zum Hauptmenü.");
                     Task.Delay(2000).Wait();
                     return false;
                 case "2":
                     var editedCar = editCar();
-                    Console.WriteLine("Auto wurde geändert.");
+                    if (editedCar == null)
+                    {
+                        Console.WriteLine("Es wurde kein Eintrag zur ID gefunden.");
+                    } else
+                    {
+                        Console.WriteLine("Auto wurde geändert.");
+                    }
                     Task.Delay(2000).Wait();
                     Console.WriteLine("Zurück zum Hauptmenü.");
                     return false;
@@ -88,15 +101,35 @@ namespace CarRental.Menus
             {
                 Console.WriteLine(carCategory);
             }
-            newCar.CarCategoryID = Convert.ToInt32(Console.ReadLine());
+            var v = Console.ReadLine();
+            var cc = Helper.checkInt(v);
+            CarCategory carCategorySelect = carCategoryCollection.getCarCategoryById(cc);
+            if (carCategorySelect == null)
+            {
+                return null;
+            }
+            else
+            {
+                newCar.CarCategoryID = cc;
+            }
             Console.Write("Leistung in PS:");
-            newCar.HorsePower = Convert.ToInt32(Console.ReadLine());
+            newCar.HorsePower = Helper.checkInt(Console.ReadLine());
             Console.Write("Kofferraumvolumen:");
-            newCar.LuggageCompartment = Convert.ToInt32(Console.ReadLine());
+            newCar.LuggageCompartment = Helper.checkInt(Console.ReadLine());
             Console.Write("Anzahl der Türen:");
-            newCar.Doors = Convert.ToInt32(Console.ReadLine());
+            newCar.Doors = Helper.checkInt(Console.ReadLine());
             Console.Write("Automatik oder manuelle Gangschaltung (a/m):");
-            newCar.Transmission = Console.ReadLine();
+            v = Console.ReadLine();
+            if (!string.IsNullOrEmpty(v))
+            {
+                while (v != "a" && v != "m")
+                {
+                    Console.WriteLine("Bitte einen gültigen Wert eingeben! (nur a oder m zulässig)");
+                    v = Console.ReadLine();
+                }
+                newCar.Transmission = v;
+            }
+            
             carCollection.cars.Add(newCar);
             carCollection.SerializeToXML(carCollection.cars);
             return newCar;
@@ -106,6 +139,13 @@ namespace CarRental.Menus
         {
             var carCollection = CarCollection.Instance;
             var carCategoryCollection = CarCategoryCollection.Instance;
+            // are there any cars at the moment?
+            if (carCollection.cars.Count == 0)
+            {
+                Console.WriteLine("Es wurden noch keine Autos angelegt.");
+                Task.Delay(2000).Wait();
+                return null;
+            }
             int carId;
             Console.Clear();
             foreach (Car car in carCollection.cars)
@@ -114,109 +154,96 @@ namespace CarRental.Menus
             }
             Console.Write(Environment.NewLine);
             Console.Write("Auto ID eingeben: ");
-            try
+            carId = Helper.checkInt(Console.ReadLine());
+            Car editedCar = carCollection.getCarById(carId);
+            if (editedCar == null)
             {
-                carId = Convert.ToInt32(Console.ReadLine());
+                return null;
             }
-            catch (Exception e)
+            Console.Write(Environment.NewLine);
+            Console.WriteLine("Ohne Eingabe, bleibt der bisherige Wert bestehen.");
+            Console.WriteLine("Bisherige Modellbezeichnung: " + editedCar.Model);
+            Console.Write("Neue Bezeichnung: ");
+            string v = Console.ReadLine();
+            editedCar.Model = !string.IsNullOrEmpty(v) ? v : editedCar.Model;
+            Console.WriteLine("Bisherige Marke: " + editedCar.Brand);
+            Console.Write("Neue Marke: ");
+            v = Console.ReadLine();
+            editedCar.Brand = !string.IsNullOrEmpty(v) ? v : editedCar.Brand;
+            Console.WriteLine("Bisherige Autokategorie: " + editedCar.CarCategoryID);
+            Console.WriteLine("Neue Autokategorie wählen: ");
+            foreach (CarCategory carCategory in carCategoryCollection.carCategories)
             {
-                throw new InvalidCastException("Bitte eine Nummer eingeben!", e);
+                Console.WriteLine(carCategory);
             }
-
-            try
+            v = Console.ReadLine();
+            if (!string.IsNullOrEmpty(v))
             {
-                Car editedCar = carCollection.cars
-                .Single(car => car.CarID == carId);
-
-                Console.Write(Environment.NewLine);
-                Console.WriteLine("Ohne Eingabe, bleibt der bisherige Wert bestehen.");
-                Console.WriteLine("Bisherige Modellbezeichnung: " + editedCar.Model);
-                Console.Write("Neue Bezeichnung: ");
-                string v = Console.ReadLine();
-                editedCar.Model = !string.IsNullOrEmpty(v) ? v : editedCar.Model;
-                Console.WriteLine("Bisherige Marke: " + editedCar.Brand);
-                Console.Write("Neue Marke: ");
-                v = Console.ReadLine();
-                editedCar.Brand = !string.IsNullOrEmpty(v) ? v : editedCar.Brand;
-                Console.WriteLine("Bisherige Autokategorie: " + editedCar.CarCategoryID);
-                Console.WriteLine("Neue Autokategorie wählen: ");
-                foreach (CarCategory carCategory in carCategoryCollection.carCategories)
+                int cc = Helper.checkInt(v);
+                CarCategory carCategorySelect = carCategoryCollection.getCarCategoryById(cc);
+                if (carCategorySelect != null)
                 {
-                    Console.WriteLine(carCategory);
-                }
-                v = Console.ReadLine();
-                if (!string.IsNullOrEmpty(v))
-                {
-                    int cc;
-                    while (!Int32.TryParse(v, out cc))
-                    {
-                        Console.WriteLine("Bitte eine gültige Zahl eingeben!");
-                        v = Console.ReadLine();
-                    }
                     editedCar.CarCategoryID = cc;
-                }
-                Console.WriteLine("Bisherige PS: " + editedCar.HorsePower);
-                Console.Write("Neue PS: ");
-                v = Console.ReadLine();
-                if (!string.IsNullOrEmpty(v))
+                } else
                 {
-                    int hp;
-                    while (!Int32.TryParse(v, out hp))
-                    {
-                        Console.WriteLine("Bitte eine gültige Zahl eingeben!");
-                        v = Console.ReadLine();
-                    }
-                    editedCar.HorsePower = hp;
+                    return null;
                 }
-                Console.WriteLine("Bisheriges Kofferraumvolumen: " + editedCar.LuggageCompartment);
-                Console.Write("Neues Kofferraumvolumen: ");
-                v = Console.ReadLine();
-                if (!string.IsNullOrEmpty(v))
-                {
-                    int lc;
-                    while (!Int32.TryParse(v, out lc))
-                    {
-                        Console.WriteLine("Bitte eine gültige Zahl eingeben!");
-                        v = Console.ReadLine();
-                    }
-                    editedCar.LuggageCompartment = lc;
-                }
-                Console.WriteLine("Bisherige Anzahl an Türen: " + editedCar.Doors);
-                Console.Write("Neue Anzahl an Türen: ");
-                v = Console.ReadLine();
-                if (!string.IsNullOrEmpty(v))
-                {
-                    int doors;
-                    while (!Int32.TryParse(v, out doors))
-                    {
-                        Console.WriteLine("Bitte eine gültige Zahl eingeben!");
-                        v = Console.ReadLine();
-                    }
-                    editedCar.Doors = doors;
-                }
-
-                Console.WriteLine("Bisheriges Getriebe: " + editedCar.Transmission);
-                Console.Write("Neues Getriebe (a/m): ");
-                v = Console.ReadLine();
-                editedCar.Transmission = !string.IsNullOrEmpty(v) ? v : editedCar.Transmission;
-
-                // save the changes to xml file
-                carCollection.SerializeToXML(carCollection.cars);
-
-
-                return editedCar;
             }
-            catch (Exception e)
+            Console.WriteLine("Bisherige PS: " + editedCar.HorsePower);
+            Console.Write("Neue PS: ");
+            v = Console.ReadLine();
+            if (!string.IsNullOrEmpty(v))
             {
-                throw new Exception("Daten nicht gefunden. Bitte valide Auto ID eingeben.", e);
+                var hp = Helper.checkInt(v);
+                editedCar.HorsePower = hp;
+            }
+            Console.WriteLine("Bisheriges Kofferraumvolumen: " + editedCar.LuggageCompartment);
+            Console.Write("Neues Kofferraumvolumen: ");
+            v = Console.ReadLine();
+            if (!string.IsNullOrEmpty(v))
+            {
+                var lc = Helper.checkInt(v);
+                editedCar.LuggageCompartment = lc;
+            }
+            Console.WriteLine("Bisherige Anzahl an Türen: " + editedCar.Doors);
+            Console.Write("Neue Anzahl an Türen: ");
+            v = Console.ReadLine();
+            if (!string.IsNullOrEmpty(v))
+            {
+                var doors = Helper.checkInt(v);
+                editedCar.Doors = doors;
             }
 
+            Console.WriteLine("Bisheriges Getriebe: " + editedCar.Transmission);
+            Console.Write("Neues Getriebe (a/m): ");
+            v = Console.ReadLine();
+            if (!string.IsNullOrEmpty(v))
+            {
+                while (v != "a" && v != "m")
+                {
+                    Console.WriteLine("Bitte einen gültigen Wert eingeben! (nur a oder m zulässig)");
+                    v = Console.ReadLine();
+                }
+                editedCar.Transmission = v;
+            }
+           
+            // save the changes to xml file
+            carCollection.SerializeToXML(carCollection.cars);
 
+            return editedCar;
+            
         }
 
         public static void deleteCar()
         {
             var carCollection = CarCollection.Instance;
+            // are there any cars at the moment?
+            if (carCollection.cars.Count == 0)
+            {
+                Console.WriteLine("Es wurden noch keine Autos angelegt.");
+                Task.Delay(2000).Wait();
+                return;
+            }
             int carId;
             Console.Clear();
             foreach (Car car in carCollection.cars)
@@ -225,39 +252,28 @@ namespace CarRental.Menus
             }
             Console.Write(Environment.NewLine);
             Console.Write("Auto ID eingeben: ");
-            try
+            carId = Helper.checkInt(Console.ReadLine());
+            Car deleteCar = carCollection.getCarById(carId);
+            if (deleteCar == null)
             {
-                carId = Convert.ToInt32(Console.ReadLine());
-                Car deleteCar = carCollection.cars
-                .First(car => car.CarID == carId);
-                Console.Write(Environment.NewLine);
-                Console.Write("Soll das Auto " + deleteCar + "wirklich gelöscht werden? (j/n): ");
-                switch (Console.ReadLine())
-                {
-                    case "j":
-                        carCollection.cars.Remove(deleteCar);
-                        Console.WriteLine("Autokategorie wurde gelöscht");
-                        // save the changes to xml file
-                        carCollection.SerializeToXML(carCollection.cars);
-                        break;
-                    default:
-                        Console.WriteLine("Löschen abgebrochen");
-                        break;
-                }
+                Console.WriteLine("Löschen abgebrochen - ID wurde nicht gefunden.");
+                Task.Delay(2000).Wait();
+                return;
             }
-            catch (InvalidCastException e)
+            Console.Write(Environment.NewLine);
+            Console.Write("Soll das Auto " + deleteCar + "wirklich gelöscht werden? (j/n): ");
+            switch (Console.ReadLine())
             {
-                throw new InvalidCastException("Bitte eine Nummer eingeben!", e);
+                case "j":
+                    carCollection.cars.Remove(deleteCar);
+                    Console.WriteLine("Autokategorie wurde gelöscht");
+                    // save the changes to xml file
+                    carCollection.SerializeToXML(carCollection.cars);
+                    break;
+                default:
+                    Console.WriteLine("Löschen abgebrochen");
+                    break;
             }
-            catch (FormatException e)
-            {
-                throw new InvalidCastException("Bitte eine valide Auto ID eingeben - keine Buchstaben!", e);
-            }
-            catch (InvalidOperationException e)
-            {
-                throw new InvalidOperationException("Die angegebene Auto ID wurde nicht gefunden", e);
-            }
-
         }
 
         public static string showCar()
@@ -265,34 +281,28 @@ namespace CarRental.Menus
             var carCollection = CarCollection.Instance;
             int carId;
             Console.Clear();
+            // are there any cars at the moment?
+            if (carCollection.cars.Count == 0)
+            {
+                return "Es wurden noch keine Autos angelegt.";
+            }
             foreach (Car car in carCollection.cars)
             {
                 Console.WriteLine(car);
             }
             Console.Write(Environment.NewLine);
             Console.Write("Auto ID eingeben: ");
-            try
+            carId = Helper.checkInt(Console.ReadLine());
+            Car showCar = carCollection.getCarById(carId);
+            if (showCar == null)
             {
-                carId = Convert.ToInt32(Console.ReadLine());
-                // get the car by id
-                Car showCar = carCollection.cars
-                    .First(car => car.CarID == carId);
+                return "Kein Auto mit dieser ID gefunden";
+            } else
+            {
                 Console.Write(Environment.NewLine);
                 return showCar.carDetails();
             }
-            catch (InvalidCastException e)
-            {
-                throw new InvalidCastException("Bitte eine Nummer eingeben!", e);
-            }
-            catch (FormatException e)
-            {
-                throw new InvalidCastException("Bitte eine valide Auto ID eingeben - keine Buchstaben!", e);
-            }
-            catch (InvalidOperationException e)
-            {
-                throw new InvalidOperationException("Die angegebene Auto ID wurde nicht gefunden", e);
-            }
-
         }
+
     }
 }

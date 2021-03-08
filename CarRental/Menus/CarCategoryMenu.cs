@@ -77,7 +77,7 @@ namespace CarRental.Menus
             }
             else
             {
-                // no customers yet - create a new one without external id
+                // no Car Category yet - create a new one without external id
                 newCarCategory = new CarCategory();
             }
             Console.Clear();
@@ -112,6 +112,12 @@ namespace CarRental.Menus
         public static CarCategory editCarCategory()
         {
             var carCategoryCollection = CarCategoryCollection.Instance;
+            if (carCategoryCollection.carCategories.Count == 0)
+            {
+                Console.WriteLine("Noch keine Kategorien angelegt.");
+                Task.Delay(2000).Wait();
+                return null;
+            }
             // initialize carCategoryId
             int carCategoryId = 0;
             Console.Clear();
@@ -161,7 +167,6 @@ namespace CarRental.Menus
             // save the changes to xml file
             carCategoryCollection.SerializeToXML(carCategoryCollection.carCategories);
 
-
             return editedCarCategory;
 
         }
@@ -172,6 +177,12 @@ namespace CarRental.Menus
         public static void deleteCarCategory()
         {
             var carCategoryCollection = CarCategoryCollection.Instance;
+            if (carCategoryCollection.carCategories.Count == 0)
+            {
+                Console.WriteLine("Noch keine Kategorien angelegt.");
+                Task.Delay(2000).Wait();
+                return;
+            }
             int carCategoryId = 0;
             Console.Clear();
             foreach (CarCategory cc in carCategoryCollection.carCategories)

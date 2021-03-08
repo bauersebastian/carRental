@@ -29,9 +29,13 @@ namespace CarRental.Menus
             switch (Console.ReadLine())
             {
                 case "1":
-                    var car = createBooking();
-                    Console.WriteLine("Buchung wurde angelegt");
+                    var newBooking = createBooking();
+                    if (newBooking != null)
+                    {
+                        Console.WriteLine("Buchung wurde angelegt");
+                    }
                     Console.WriteLine("Zurück zum Hauptmenü.");
+                    // Wait for 2 seconds, otherwise we don't see the message
                     Task.Delay(2000).Wait();
                     return false;
                 case "2":
@@ -42,7 +46,7 @@ namespace CarRental.Menus
                     }
                     else
                     {
-                        Console.WriteLine("Keine Buchung zum Kunden gefunden.");
+                        Console.WriteLine("Keine Buchung zum Kunden gefunden oder fehlerhafte Eingabe.");
                     }
                     Task.Delay(2000).Wait();
                     Console.WriteLine("Zurück zum Hauptmenü.");
@@ -64,7 +68,6 @@ namespace CarRental.Menus
                 default:
                     // Show a message
                     Console.WriteLine("Bitte eine valide Option eingeben.");
-                    // Wait for 2 seconds, otherwise we don't see the message
                     Task.Delay(2000).Wait();
                     return true;
             }
@@ -79,6 +82,7 @@ namespace CarRental.Menus
         /// </returns>
         public static Booking createBooking()
         {
+            // get all necessary collections first
             var bookingCollection = BookingCollection.Instance;
             var customerCollection = CustomerCollection.Instance;
             var carCategoryCollection = CarCategoryCollection.Instance;
@@ -106,33 +110,39 @@ namespace CarRental.Menus
                 Console.WriteLine(customer);
             }
             var v = Console.ReadLine();
-            if (!string.IsNullOrEmpty(v))
+            // check if we can find a customer with that id
+            Customer bookingCustomer = CustomerMenu.getCustomerByIdDialog(v);
+            if (bookingCustomer == null)
             {
-                int ci;
-                while (!Int32.TryParse(v, out ci))
-                {
-                    Console.WriteLine("Bitte eine gültige Zahl eingeben!");
-                    v = Console.ReadLine();
-                }
-                newBooking.CustomerID = ci;
+                Console.WriteLine("Kein Kunde zur ID gefunden. Abbruch.");
+                Task.Delay(2000).Wait();
+                return null;
+            } else
+            {
+                newBooking.CustomerID = bookingCustomer.CustomerID;
             }
             Console.WriteLine("Kategorie des Autos - bitte wählen:");
             foreach (CarCategory carCategory in carCategoryCollection.carCategories)
             {
                 Console.WriteLine(carCategory);
             }
-            newBooking.CarCategoryID = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Auto aus der gewählten Kategorie - bitte auswählen:");
-            var possibleCars = carCollection.cars
-                .Where(records => records.CarCategoryID == newBooking.CarCategoryID)
-                .ToList();
-            foreach (Car car in possibleCars)
+            v = Console.ReadLine();
+
+            // check if an int was entered and we can find that category
+            var cc = Helper.checkInt(v);
+            CarCategory carCategorySelect = carCategoryCollection.getCarCategoryById(cc);
+            if (carCategorySelect == null)
             {
-                Console.WriteLine(car);
+                Console.WriteLine("Keine Kategorie zur ID gefunden. Abbruch.");
+                Task.Delay(2000).Wait();
+                return null;
+            } else
+            {
+                newBooking.CarCategoryID = cc;
             }
-            newBooking.CarID = Convert.ToInt32(Console.ReadLine());
             Console.Write("Bitte Startdatum der Buchung im Format dd-MM-yyyy eingeben:");
             v = Console.ReadLine();
+            // make sure we got the right input format for a date
             DateTime dt;
             while (!DateTime.TryParseExact(v, "dd-MM-yyyy", null, System.Globalization.DateTimeStyles.None, out dt))
             {
@@ -148,7 +158,41 @@ namespace CarRental.Menus
                 v = Console.ReadLine();
             }
             newBooking.EndDate = dt;
+            if (newBooking.EndDate < newBooking.StartDate)
+            {
+                Console.WriteLine("Das Endedatum kann nicht vor dem Startdatum liegen. Abbruch.");
+                Task.Delay(2000).Wait();
+                return null;
+            }
 
+            // now check if a car is availble in the given time frame
+            Console.WriteLine("Verfügbare Autos zum Zeitraum in der gewählten Kategorie werden ermittelt...");
+            Console.WriteLine("Verfügbare Autos aus der gewählten Kategorie - bitte auswählen:");
+            var possibleCars = BookingCollection.getAvailableCars(newBooking.StartDate, newBooking.EndDate, newBooking.CarCategoryID);
+            if (possibleCars.Count == 0)
+            {
+                Console.WriteLine("Keine Autos zur Kategorie und zum gewählten Zeitraum gefunden.");
+                Task.Delay(2000).Wait();
+                return null;
+            }
+            foreach (Car car in possibleCars)
+            {
+                Console.WriteLine(car);
+            }
+            v = Console.ReadLine();
+            var ci = Helper.checkInt(v);
+            Car selectedCar = carCollection.getCarById(ci);
+            if (selectedCar == null)
+            {
+                Console.WriteLine("Kein Auto zur ID gefunden. Abbruch.");
+                Task.Delay(2000).Wait();
+                return null;
+            } else
+            {
+                newBooking.CarID = ci;
+            }
+
+            // add booking, save and leave
             bookingCollection.bookings.Add(newBooking);
             bookingCollection.SerializeToXML(bookingCollection.bookings);
             return newBooking;
@@ -166,7 +210,7 @@ namespace CarRental.Menus
             var customerCollection = CustomerCollection.Instance;
             var carCategoryCollection = CarCategoryCollection.Instance;
             var carCollection = CarCollection.Instance;
-     
+            // get all bookings of a given customer
             Booking editedBooking = getBookingByCustomerDialog();
             if (editedBooking == null)
             {
@@ -176,7 +220,7 @@ namespace CarRental.Menus
             Console.Write(Environment.NewLine);
             Console.WriteLine("Ohne Eingabe, bleibt der bisherige Wert bestehen.");
 
-            //Kunde ändern
+            // Change customer
             Console.WriteLine("Bisheriger Kunde: " + editedBooking.CustomerID);
             Console.WriteLine("Neuer Kunde - bitte auswählen: ");
             foreach (Customer record in customerCollection.customers)
@@ -187,19 +231,24 @@ namespace CarRental.Menus
             var v = Console.ReadLine();
             if (!string.IsNullOrEmpty(v))
             {
-                int ci;
-                while (!Int32.TryParse(v, out ci))
+                int customerIdEntered = Helper.checkInt(v);
+                Customer selectedCustomer = customerCollection.getCustomerById(customerIdEntered);
+                if (selectedCustomer == null)
                 {
-                    Console.WriteLine("Bitte eine gültige Zahl eingeben!");
-                    v = Console.ReadLine();
+                    Console.WriteLine("Kein Kunde zur ID gefunden. Abbruch.");
+                    Task.Delay(2000).Wait();
+                    return null;
+                } else
+                {
+                    editedBooking.CustomerID = customerIdEntered;
                 }
-                editedBooking.CustomerID = ci;
+                
             } else
             {
                 // leave the id as it is
                 editedBooking.CustomerID = editedBooking.CustomerID;
             }
-            //Kategorie ändern
+            // change category
             Console.WriteLine("Bisheriger Kategorie: " + editedBooking.CarCategoryID);
             Console.WriteLine("Neue Kategorie - bitte auswählen: ");
             foreach (CarCategory carCategory in carCategoryCollection.carCategories)
@@ -209,70 +258,85 @@ namespace CarRental.Menus
             v = Console.ReadLine();
             if (!string.IsNullOrEmpty(v))
             {
-                int cc;
-                while (!Int32.TryParse(v, out cc))
+                int carCategoryIdEntered = Helper.checkInt(v);
+                CarCategory selectedCarCategory = carCategoryCollection.getCarCategoryById(carCategoryIdEntered);
+                if (selectedCarCategory == null)
                 {
-                    Console.WriteLine("Bitte eine gültige Zahl eingeben!");
-                    v = Console.ReadLine();
+                    Console.WriteLine("Kein Kunde zur ID gefunden. Abbruch.");
+                    Task.Delay(2000).Wait();
+                    return null;
+                } else
+                {
+                    editedBooking.CarCategoryID = carCategoryIdEntered;
                 }
-                editedBooking.CarCategoryID = cc;
             }
             else
             {
                 // leave the id as it is
                 editedBooking.CarCategoryID = editedBooking.CarCategoryID;
             }
-            //Auto ändern
-            Console.WriteLine("Bisheriges Auto: " + editedBooking.CarID);
-            Console.WriteLine("Auto aus der gewählten Kategorie - bitte auswählen:");
-            var possibleCars = carCollection.cars
-                .Where(records => records.CarCategoryID == editedBooking.CarCategoryID)
-                .ToList();
-            foreach (Car car in possibleCars)
-            {
-                Console.WriteLine(car);
-            }
-            v = Console.ReadLine();
-            if (!string.IsNullOrEmpty(v))
-            {
-                int car;
-                while (!Int32.TryParse(v, out car))
-                {
-                    Console.WriteLine("Bitte eine gültige Zahl eingeben!");
-                    v = Console.ReadLine();
-                }
-                editedBooking.CarID = car;
-            }
-            else
-            {
-                // leave the id as it is
-                editedBooking.CarID = editedBooking.CarID;
-            }
-            //Startdatum ändern
+
+            // Change start date
             Console.WriteLine("Bisheriges Startdatum " + editedBooking.StartDate.ToString("dd.MM.yyyy"));
             Console.Write("Bitte Startdatum der Buchung im Format dd-MM-yyyy eingeben:");
             v = Console.ReadLine();
             DateTime dt;
             while (!DateTime.TryParseExact(v, "dd-MM-yyyy", null, System.Globalization.DateTimeStyles.None, out dt))
             {
-                Console.WriteLine("Datums Eingabe bitte im genannten Format vornehmen.");
+                Console.WriteLine("Datums Eingabe bitte im genannten Format vornehmen. Musseingabe bei Änderung von Buchungen.");
                 v = Console.ReadLine();
             }
             editedBooking.StartDate = dt;
-            //Enddatum ändern
+
+            // Change end date
             Console.WriteLine("Bisheriges Enddatum " + editedBooking.EndDate.ToString("dd.MM.yyyy"));
             Console.Write("Bitte Endedatum im Format dd-MM-yyyy eingeben:");
             v = Console.ReadLine();
             while (!DateTime.TryParseExact(v, "dd-MM-yyyy", null, System.Globalization.DateTimeStyles.None, out dt))
             {
-                Console.WriteLine("Datums Eingabe bitte im genannten Format vornehmen.");
+                Console.WriteLine("Datums Eingabe bitte im genannten Format vornehmen. Musseingabe bei Änderung von Buchungen.");
                 v = Console.ReadLine();
             }
             editedBooking.EndDate = dt;
+            if (editedBooking.EndDate < editedBooking.StartDate)
+            {
+                Console.WriteLine("Das Endedatum kann nicht vor dem Startdatum liegen. Abbruch.");
+                Task.Delay(2000).Wait();
+                return null;
+            }
+
+            // Change car
+            // now check if a car is availble in the given time frame
+            Console.WriteLine("Verfügbare Autos zum Zeitraum in der gewählten Kategorie werden ermittelt...");
+
+            Console.WriteLine("Verfügbare Autos aus der gewählten Kategorie - bitte auswählen:");
+            var possibleCars = BookingCollection.getAvailableCars(editedBooking.StartDate, editedBooking.EndDate, editedBooking.CarCategoryID);
+            if (possibleCars.Count == 0)
+            {
+                Console.WriteLine("Keine Autos zur Kategorie und zum gewählten Zeitraum gefunden.");
+                Task.Delay(2000).Wait();
+                return null;
+            }
+            foreach (Car car in possibleCars)
+            {
+                Console.WriteLine(car);
+            }
+            v = Console.ReadLine();
+            var ci = Helper.checkInt(v);
+            Car selectedCar = carCollection.getCarById(ci);
+            if (selectedCar == null)
+            {
+                Console.WriteLine("Kein Auto zur ID gefunden. Abbruch.");
+                Task.Delay(2000).Wait();
+                return null;
+            }
+            else
+            {
+                editedBooking.CarID = ci;
+            }
 
             // save the changes to xml file
             bookingCollection.SerializeToXML(bookingCollection.bookings);
-
 
             return editedBooking;
             
@@ -286,11 +350,15 @@ namespace CarRental.Menus
         {
             var bookingCollection = BookingCollection.Instance;
             Console.Clear();
+            // get bookings by customer
             Booking deleteBooking = getBookingByCustomerDialog();
             if (deleteBooking == null)
             {
+                Console.WriteLine("Keine Buchung gefunden. Abbruch.");
+                Task.Delay(2000).Wait();
                 return;
             }
+            // we found a booking - really delete it?
             Console.Write(Environment.NewLine);
             Console.Write("Soll die Buchung " + deleteBooking + "wirklich gelöscht werden? (j/n): ");
             switch (Console.ReadLine())
@@ -303,6 +371,7 @@ namespace CarRental.Menus
                     break;
                 default:
                     Console.WriteLine("Löschen abgebrochen");
+                    Task.Delay(2000).Wait();
                     break;
             }
            
@@ -318,10 +387,12 @@ namespace CarRental.Menus
         {
             var bookingCollection = BookingCollection.Instance;
             Console.Clear();
+            // are there any bookings yet?
             if (!bookingCollection.bookingExists())
             {
                 return "Keine Buchungen vorhanden";
             }
+            // get booking by customer
             Booking showBooking = getBookingByCustomerDialog();
             Console.Write(Environment.NewLine);
             if (showBooking != null)
@@ -347,11 +418,19 @@ namespace CarRental.Menus
             var bookingCollection = BookingCollection.Instance;
             int customerId = 0;
             int bookingId = 0;
+            // do we actually have customers yet?
+            if (customerCollection.customers.Count == 0)
+            {
+                Console.WriteLine("noch keine Kunden angelegt bisher.");
+                Task.Delay(2000).Wait();
+                return null;
+            }
             Console.WriteLine("Für welchen Kunden soll eine Buchung ausgewählt werden?");
             foreach (Customer record in customerCollection.customers)
             {
                 Console.WriteLine(record);
             }
+            // Read the bookings for a certain customer
             Console.WriteLine("Kundennummer eingeben:");
             var v = Console.ReadLine();
             if (!string.IsNullOrEmpty(v))
@@ -399,5 +478,6 @@ namespace CarRental.Menus
                 return editedBooking;
             }
         }
+
     }
 }

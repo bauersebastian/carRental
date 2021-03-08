@@ -66,5 +66,21 @@ namespace CarRental.Models
             return cars;
         }
 
+        // Helper functions
+        public Car getCarById(int id)
+        {
+            var carCollection = CarCollection.Instance;
+            Car selectedCar = carCollection.cars
+                .SingleOrDefault(car => car.CarID == id);
+            if (selectedCar == null)
+            {
+                return null;
+            }
+            else
+            {
+                return selectedCar;
+            }
+        }
+
     }
 }

@@ -3,21 +3,21 @@
   <CarCategory>
     <CarCategoryID>1</CarCategoryID>
     <Name>Kleinwagen</Name>
-    <RentalFeeDay>45</RentalFeeDay>
+    <RentalFeeDay>50</RentalFeeDay>
   </CarCategory>
   <CarCategory>
     <CarCategoryID>2</CarCategoryID>
     <Name>Mittelklasse</Name>
-    <RentalFeeDay>62</RentalFeeDay>
+    <RentalFeeDay>65</RentalFeeDay>
   </CarCategory>
   <CarCategory>
     <CarCategoryID>3</CarCategoryID>
     <Name>Obere Mittelklasse</Name>
-    <RentalFeeDay>78</RentalFeeDay>
+    <RentalFeeDay>75</RentalFeeDay>
   </CarCategory>
   <CarCategory>
     <CarCategoryID>4</CarCategoryID>
     <Name>Oberklasse</Name>
-    <RentalFeeDay>150</RentalFeeDay>
+    <RentalFeeDay>120</RentalFeeDay>
   </CarCategory>
 </ArrayOfCarCategory>

@@ -67,7 +67,8 @@ namespace CarRental.Models
         }
 
         // Helper functions
-        public bool bookingExists(int id = 1)
+        // check if there are any bookings
+        public bool bookingExists()
         {
             var bookingCollection = BookingCollection.Instance;
             if (bookingCollection.bookings.Count == 0)
@@ -76,15 +77,7 @@ namespace CarRental.Models
             }
             else
             {
-                Booking showBooking = bookingCollection.bookings
-                    .SingleOrDefault(record => record.BookingID == id);
-                if (showBooking != null)
-                {
-                    return true;
-                } else
-                {
-                    return false;
-                }
+                return true;
             }
         }
 
@@ -117,6 +110,30 @@ namespace CarRental.Models
                 .Where(records => records.CustomerID == id)
                 .ToList();
             return possibleBookings;
+        }
+
+        // check available cars in given time for a booking
+        public static List<Car> getAvailableCars(DateTime start, DateTime end, int cc)
+        {
+            var carCollection = CarCollection.Instance;
+            var bookingCollection = BookingCollection.Instance;
+            List<Car> availableCars = new List<Car>();
+            List<Car> carsOfCategory = carCollection.cars
+                .Where(records => records.CarCategoryID == cc)
+                .ToList();
+
+            // check if booking exists in given time
+            foreach (Car car in carsOfCategory)
+            {
+                List<Booking> checkBooking = bookingCollection.bookings
+                    .FindAll(records => records.CarID == car.CarID && (records.StartDate <= end && records.EndDate >= start));
+                    
+                if (checkBooking.Count == 0)
+                {
+                    availableCars.Add(car);
+                }
+            }
+            return availableCars;
         }
     }
 }

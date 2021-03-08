@@ -1,22 +1,15 @@
 ﻿<Properties StartupConfiguration="{F0D7303E-EB9E-49B3-9185-A63485103C02}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="CarRental/Menus/CarCategoryMenu.cs">
-    <Files>
-      <File FileName="CarRental/Menus/CarCategoryMenu.cs" Line="131" Column="21" />
-      <File FileName="CarRental/Menus/CarMenu.cs" Line="1" Column="1" />
-      <File FileName="CarRental/Models/CarCategoryCollection.cs" Line="81" Column="44" />
-    </Files>
+  <MonoDevelop.Ide.Workbench>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="CarRental" expanded="True">
             <Node name="CarRental" expanded="True">
-              <Node name="Dependencies" expanded="True">
-                <Node name="FrameworkReferences" expanded="True" />
+              <Node name="Dependencies" expanded="True" />
+              <Node name="Menus" expanded="True" />
+              <Node name="Models" expanded="True">
+                <Node name="BookingCollection.cs" selected="True" />
               </Node>
-              <Node name="Menus" expanded="True">
-                <Node name="CarCategoryMenu.cs" selected="True" />
-              </Node>
-              <Node name="Models" expanded="True" />
             </Node>
           </Node>
         </State>
