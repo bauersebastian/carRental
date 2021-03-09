@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfCarCategory xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <CarCategory>
+    <CarCategoryID>1</CarCategoryID>
+    <Name>Kleinwagen</Name>
+    <RentalFeeDay>65</RentalFeeDay>
+  </CarCategory>
+  <CarCategory>
+    <CarCategoryID>2</CarCategoryID>
+    <Name>Mittelklasse</Name>
+    <RentalFeeDay>75</RentalFeeDay>
+  </CarCategory>
+  <CarCategory>
+    <CarCategoryID>3</CarCategoryID>
+    <Name>Obere Mittelklasse</Name>
+    <RentalFeeDay>89</RentalFeeDay>
+  </CarCategory>
+  <CarCategory>
+    <CarCategoryID>4</CarCategoryID>
+    <Name>Oberklasse</Name>
+    <RentalFeeDay>105</RentalFeeDay>
+  </CarCategory>
+</ArrayOfCarCategory>

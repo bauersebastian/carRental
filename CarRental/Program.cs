@@ -23,7 +23,7 @@ namespace CarRental
             }
             catch (System.IO.FileNotFoundException)
             {
-                Console.WriteLine("Keine Datei gefunden. Programm startet initial.");
+                Console.WriteLine("Keine Datei zur Collection gefunden. Programm startet für dieses Objekt initial.");
             }
             
             // keep track if we should show the menu or leave the program

@@ -32,7 +32,7 @@ namespace CarRental.Models
         {
             get
             {
-                return this.bookings.Max(x => x.CarID);
+                return this.bookings.Max(x => x.BookingID);
             }
         }
 
@@ -132,6 +132,42 @@ namespace CarRental.Models
                 {
                     availableCars.Add(car);
                 }
+
+            }
+            return availableCars;
+        }
+
+        // special case for editing existing bookings
+        // therefore we overload the method
+        public static List<Car> getAvailableCars(DateTime start, DateTime end, int cc, int bookingId)
+        {
+            var carCollection = CarCollection.Instance;
+            var bookingCollection = BookingCollection.Instance;
+            List<Car> availableCars = new List<Car>();
+            List<Car> carsOfCategory = carCollection.cars
+                .Where(records => records.CarCategoryID == cc)
+                .ToList();
+
+            // check if booking exists in given time
+            foreach (Car car in carsOfCategory)
+            {
+                List<Booking> checkBooking = bookingCollection.bookings
+                    .FindAll(records => records.CarID == car.CarID && (records.StartDate <= end && records.EndDate >= start));
+
+                if (checkBooking.Count == 0)
+                {
+                    availableCars.Add(car);
+                } else
+                {
+                    // we have to check if the booking we edit is in the collection
+                    // if yes the car is available
+                    Booking bookingWeEdit = checkBooking.SingleOrDefault(record => record.BookingID == bookingId);
+                    if (bookingWeEdit != null)
+                    {
+                        availableCars.Add(car);
+                    }
+                }
+
             }
             return availableCars;
         }

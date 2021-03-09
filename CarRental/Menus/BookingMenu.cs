@@ -310,7 +310,7 @@ namespace CarRental.Menus
             Console.WriteLine("Verfügbare Autos zum Zeitraum in der gewählten Kategorie werden ermittelt...");
 
             Console.WriteLine("Verfügbare Autos aus der gewählten Kategorie - bitte auswählen:");
-            var possibleCars = BookingCollection.getAvailableCars(editedBooking.StartDate, editedBooking.EndDate, editedBooking.CarCategoryID);
+            var possibleCars = BookingCollection.getAvailableCars(editedBooking.StartDate, editedBooking.EndDate, editedBooking.CarCategoryID, editedBooking.BookingID);
             if (possibleCars.Count == 0)
             {
                 Console.WriteLine("Keine Autos zur Kategorie und zum gewählten Zeitraum gefunden.");

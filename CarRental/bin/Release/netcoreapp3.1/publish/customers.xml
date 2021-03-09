@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfCustomer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Customer>
+    <CustomerID>1</CustomerID>
+    <FirstName>Maxi</FirstName>
+    <LastName>Müller</LastName>
+    <IBAN>DE89 3704 0044 0532 0130 00</IBAN>
+    <Street>Mühlenstraße 15</Street>
+    <Postcode>97506</Postcode>
+    <City>Grafenrheinfeld</City>
+    <Birthday>1981-10-27T00:00:00</Birthday>
+  </Customer>
+  <Customer>
+    <CustomerID>2</CustomerID>
+    <FirstName>Manuela</FirstName>
+    <LastName>Wagner</LastName>
+    <IBAN>DE89370400440532013000</IBAN>
+    <Street>Jahnstraße 78</Street>
+    <Postcode>97447</Postcode>
+    <City>Gerolzhofen</City>
+    <Birthday>1975-10-10T00:00:00</Birthday>
+  </Customer>
+</ArrayOfCustomer>

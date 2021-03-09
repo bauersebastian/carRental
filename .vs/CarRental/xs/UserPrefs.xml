@@ -6,10 +6,10 @@
           <Node name="CarRental" expanded="True">
             <Node name="CarRental" expanded="True">
               <Node name="Dependencies" expanded="True" />
-              <Node name="Menus" expanded="True" />
-              <Node name="Models" expanded="True">
-                <Node name="BookingCollection.cs" selected="True" />
+              <Node name="Menus" expanded="True">
+                <Node name="BookingMenu.cs" selected="True" />
               </Node>
+              <Node name="Models" expanded="True" />
             </Node>
           </Node>
         </State>

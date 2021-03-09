@@ -1,0 +1,5 @@
+/Users/sebastian/Developer/c#/CarRental/CarRental/bin/Release/netcoreapp3.1/publish/CarRental.dll
+/Users/sebastian/Developer/c#/CarRental/CarRental/bin/Release/netcoreapp3.1/publish/CarRental.deps.json
+/Users/sebastian/Developer/c#/CarRental/CarRental/bin/Release/netcoreapp3.1/publish/CarRental.runtimeconfig.json
+/Users/sebastian/Developer/c#/CarRental/CarRental/bin/Release/netcoreapp3.1/publish/CarRental.pdb
+/Users/sebastian/Developer/c#/CarRental/CarRental/bin/Release/netcoreapp3.1/publish/IbanNet.dll

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfBooking xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Booking>
+    <BookingID>1</BookingID>
+    <CustomerID>1</CustomerID>
+    <CarID>2</CarID>
+    <StartDate>2021-03-05T00:00:00</StartDate>
+    <EndDate>2021-03-25T00:00:00</EndDate>
+    <CarCategoryID>3</CarCategoryID>
+  </Booking>
+  <Booking>
+    <BookingID>3</BookingID>
+    <CustomerID>2</CustomerID>
+    <CarID>4</CarID>
+    <StartDate>2021-04-04T00:00:00</StartDate>
+    <EndDate>2021-04-11T00:00:00</EndDate>
+    <CarCategoryID>1</CarCategoryID>
+  </Booking>
+</ArrayOfBooking>
